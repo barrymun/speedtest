@@ -1,17 +1,32 @@
 import React from "react";
 import {connect} from "react-redux";
 import PropTypes from "prop-types";
+import uuid from "uuid";
 
 import withStyles from "@material-ui/core/styles/withStyles";
 
 const styles = theme => ({});
+const hosts = [
+    "https://google.com",
+];
 
 class Main extends React.Component {
-    state = {};
+    state = {
+        ping: 0,
+    };
+
 
     async componentDidMount() {
-        this.getPing("google.com")
+        for (let index = 0; index < 100; index++) {
+            hosts.forEach(async host => {
+                await this.getPing(host, ping => this.setState({ping}));
+            });
+            await this.sleep(50);
+        }
     }
+
+
+    sleep = m => new Promise(r => setTimeout(r, m));
 
 
     getDownloadSpeed = () => {
@@ -41,7 +56,7 @@ class Main extends React.Component {
         function InitiateSpeedDetection() {
             // ShowProgressMessage("Loading the image, please wait...");
             window.setTimeout(MeasureConnectionSpeed, 1);
-        };
+        }
 
         if (window.addEventListener) {
             window.addEventListener('load', InitiateSpeedDetection, false);
@@ -55,11 +70,11 @@ class Main extends React.Component {
             download.onload = function () {
                 endTime = (new Date()).getTime();
                 showResults();
-            }
+            };
 
             download.onerror = function (err, msg) {
                 // ShowProgressMessage("Invalid image, or error downloading");
-            }
+            };
 
             startTime = (new Date()).getTime();
             var cacheBuster = "?nnn=" + startTime;
@@ -83,35 +98,36 @@ class Main extends React.Component {
     };
 
 
-    getPing = (ip) => {
-        var started = new Date().getTime();
+    /**
+     *
+     */
+    getPing = async (host, callback) => {
+        let started = new Date().getTime();
+        let xhr = new XMLHttpRequest();
 
-        var http = new XMLHttpRequest();
-
-        http.open("GET", ip, true);
-        http.onreadystatechange = function() {
-            if (http.readyState == 4) {
-                var ended = new Date().getTime();
-
-                var milliseconds = ended - started;
-                console.log({milliseconds})
-
-                // if (pong != null) {
-                //     pong(milliseconds);
-                // }
-            }
+        xhr.open("GET", `${host}?cacheCleaner=${uuid()}`, true);
+        xhr.setRequestHeader("Cache-Control", "no-cache");
+        xhr.setRequestHeader("Pragma", "no-cache");
+        xhr.setRequestHeader("If-Modified-Since", "Sat, 1 Jan 2000 00:00:00 GMT");
+        xhr.onload = function () {
+            // callback(null, xhr.response);
+            callback(null, 0);
         };
-        try {
-            http.send(null);
-        } catch(exception) {
-            // this is expected
-        }
-
+        xhr.onerror = function () {
+            let ended = new Date().getTime();
+            let ping = ended - started;
+            callback(ping);
+        };
+        xhr.send();
     };
 
 
     render() {
-        return <div/>
+        const {ping} = this.state;
+
+        return (
+            <div>{ping}</div>
+        )
     }
 }
 
