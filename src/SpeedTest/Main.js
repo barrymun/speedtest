@@ -5,6 +5,8 @@ import uuid from "uuid";
 
 import withStyles from "@material-ui/core/styles/withStyles";
 
+import {sleep} from "../utils";
+
 const styles = theme => ({});
 const hosts = [
     "https://google.com",
@@ -17,23 +19,26 @@ class Main extends React.Component {
 
 
     async componentDidMount() {
+        this.getDownloadSpeed();
+        // this.sumPing();
+
+    }
+
+    sumPing = async () => {
         for (let index = 0; index < 100; index++) {
             hosts.forEach(async host => {
                 await this.getPing(host, ping => this.setState({ping}));
             });
-            await this.sleep(50);
+            await sleep(50);
         }
-    }
-
-
-    sleep = m => new Promise(r => setTimeout(r, m));
-
+    };
 
     getDownloadSpeed = () => {
         // var imageAddr = "/test.jpg";
         // var imageAddr = "https://i.pinimg.com/originals/5c/f7/39/5cf7390adae7111d1ccc7b0f6625fc9d.jpg";
         var imageAddr = "https://hdqwalls.com/download/chicago-city-waterfall-8k-x1-7680x4320.jpg";
-        var downloadSize = 4995374; //bytes
+        // var downloadSize = 4995374; //bytes
+        var downloadSize = 6937258;  // bytes
 
         function ShowProgressMessage(msg) {
             if (console) {
@@ -77,8 +82,8 @@ class Main extends React.Component {
             };
 
             startTime = (new Date()).getTime();
-            var cacheBuster = "?nnn=" + startTime;
-            download.src = imageAddr + cacheBuster;
+            var cacheCleaner = "?cacheCleaner=" + startTime;
+            download.src = `${imageAddr}${cacheCleaner}`;
 
             function showResults() {
                 var duration = (endTime - startTime) / 1000;
@@ -96,7 +101,6 @@ class Main extends React.Component {
             }
         }
     };
-
 
     /**
      *
@@ -120,7 +124,6 @@ class Main extends React.Component {
         };
         xhr.send();
     };
-
 
     render() {
         const {ping} = this.state;
