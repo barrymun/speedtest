@@ -15,50 +15,66 @@ const hosts = [
 class Main extends React.Component {
     state = {
         ping: 0,
+        speedMbps: [],
+        averageSpeedMbps: 0.0,
     };
 
-
     async componentDidMount() {
-        this.sumDownloadSpeed();
+        await this.sumDownloadSpeed();
         // this.sumPing();
     }
 
+    /**
+     *
+     * @returns {Promise<void>}
+     */
     sumDownloadSpeed = async () => {
-        console.log('A')
-        await this.getDownloadSpeed(res => console.log(res));
-        console.log('B')
-        // for (let index = 0; index < 20; index++) {
-        //     console.log('A')
-        //     await this.getDownloadSpeed(res => console.log(res));
-        //     console.log('B')
-        //     await sleep(50);
-        // }
+        for (let index = 0; index < 20; index++) {
+            await this.getDownloadSpeed()
+                .then(r => {
+                    let speedMbps = [...this.state.speedMbps, r];
+                    this.setState(prevState => ({
+                        speedMbps,
+                        averageSpeedMbps: (speedMbps.reduce((a, b) => a + b)) / speedMbps.length,
+                    }), () => console.log(this.state.averageSpeedMbps))
+                });
+            await sleep(50);
+        }
     };
 
-    getDownloadSpeed = async callback => {
+    /**
+     *
+     * @returns {Promise<any>}
+     */
+    getDownloadSpeed = async () => {
         let imageAddr = "https://hdqwalls.com/download/chicago-city-waterfall-8k-x1-7680x4320.jpg";
         let downloadSize = 6937258;  // bytes
         let startTime, endTime;
         let download = new Image();
 
-        download.onload = function () {
-            endTime = (new Date()).getTime();
-            let duration = (endTime - startTime) / 1000;
-            let bitsLoaded = downloadSize * 8;
-            let speedBps = (bitsLoaded / duration).toFixed(2);
-            let speedKbps = (speedBps / 1024).toFixed(2);
-            let speedMbps = (speedKbps / 1024).toFixed(2);
-            // console.log({speedBps, speedKbps, speedMbps})
-            callback({speedBps, speedKbps, speedMbps});
-        };
-
+        let promise = new Promise(resolve => {
+            download.onload = function () {
+                endTime = (new Date()).getTime();
+                let duration = (endTime - startTime) / 1000;
+                let bitsLoaded = downloadSize * 8;
+                let speedBps = (bitsLoaded / duration).toFixed(2);
+                let speedKbps = (speedBps / 1024).toFixed(2);
+                let speedMbps = (speedKbps / 1024).toFixed(2);
+                // resolve({speedBps, speedKbps, speedMbps});
+                resolve(parseFloat(speedMbps));
+            };
+        });
         download.onerror = function (err, msg) {
         };
-
         startTime = (new Date()).getTime();
         download.src = `${imageAddr}?cacheCleaner=${startTime}`;
+        return promise;
     };
 
+    /**
+     *
+     * @returns {Promise<void>}
+     */
     sumPing = async () => {
         for (let index = 0; index < 100; index++) {
             hosts.forEach(async host => {
@@ -92,10 +108,16 @@ class Main extends React.Component {
     };
 
     render() {
-        const {ping} = this.state;
+        const {
+            ping,
+            averageSpeedMbps,
+        } = this.state;
 
         return (
-            <div>{ping}</div>
+            <div>
+                <div>{averageSpeedMbps}</div>
+                <div>{ping}</div>
+            </div>
         )
     }
 }
