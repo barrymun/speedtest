@@ -19,7 +19,8 @@ const hosts = [
 
 class Main extends React.Component {
     state = {
-        ping: 0,
+        ping: [],
+        averagePing: 0.0,
         downloadSpeedMbps: [],
         averageDownloadSpeedMbps: 0.0,
         uploadSpeedMbps: [],
@@ -68,7 +69,6 @@ class Main extends React.Component {
                 let speedBps = (bitsLoaded / duration).toFixed(2);
                 let speedKbps = (speedBps / 1024).toFixed(2);
                 let speedMbps = (speedKbps / 1024).toFixed(2);
-                // resolve({speedBps, speedKbps, speedMbps});
                 resolve(parseFloat(speedMbps));
             };
         });
@@ -84,18 +84,25 @@ class Main extends React.Component {
      * @returns {Promise<void>}
      */
     getAveragePing = async iterations => {
-        for (let index = 0; index < iterations; index++) {
-            hosts.forEach(async host => {
-                await this.getPing(host, ping => this.setState({ping}));
-            });
-            await sleep(50);
-        }
+        hosts.forEach(async host => {
+            for (let index = 0; index < iterations; index++) {
+                let r = await this.getPing(host);
+                let ping = [...this.state.ping, r];
+                let averagePing = (ping.reduce((a, b) => a + b)) / ping.length;
+
+                this.setState(prevState => ({
+                    ping,
+                    averagePing,
+                }));
+                await sleep(50);
+            }
+        });
     };
 
     /**
      *
      */
-    getPing = async (host, callback) => {
+    getPing = async host => {
         let startTime;
         let xhr = new XMLHttpRequest();
 
@@ -103,18 +110,16 @@ class Main extends React.Component {
         xhr.setRequestHeader("Cache-Control", "no-cache");
         xhr.setRequestHeader("Pragma", "no-cache");
         xhr.setRequestHeader("If-Modified-Since", "Sat, 1 Jan 2000 00:00:00 GMT");
-        xhr.onload = function () {
-            let endTime = new Date().getTime();
-            let speedMs = endTime - startTime;
-            callback(speedMs);
-        };
-        xhr.onerror = function () {
-            let endTime = new Date().getTime();
-            let speedMs = endTime - startTime;
-            callback(speedMs);
-        };
+        let promise = new Promise(resolve => {
+            xhr.onload = function () {
+                let endTime = new Date().getTime();
+                let speedMs = endTime - startTime;
+                resolve(speedMs);
+            };
+        });
         startTime = new Date().getTime();
         xhr.send();
+        return promise;
     };
 
     /**
@@ -180,15 +185,15 @@ class Main extends React.Component {
 
     render() {
         const {
-            ping,
-            averageDownloadSpeedMbps,
+            averagePing,
             averageUploadSpeedMbps,
+            averageDownloadSpeedMbps,
         } = this.state;
 
         return (
             <div>
                 <div>{averageDownloadSpeedMbps}</div>
-                <div>{ping}</div>
+                <div>{averagePing}</div>
                 <div>{averageUploadSpeedMbps}</div>
             </div>
         )
