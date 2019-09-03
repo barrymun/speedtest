@@ -2,10 +2,12 @@ import React from "react";
 import {connect} from "react-redux";
 import PropTypes from "prop-types";
 import uuid from "uuid";
+import axios from "axios";
 
 import withStyles from "@material-ui/core/styles/withStyles";
 
 import {sleep} from "../utils";
+import {HELLO} from "../constants";
 
 const styles = theme => ({});
 const hosts = [
@@ -20,10 +22,13 @@ class Main extends React.Component {
     };
 
     async componentDidMount() {
-        await this.sumDownloadSpeed(10);
-        await this.sumPing(100);
+        // await this.sumDownloadSpeed(10);
+        // await this.sumPing(100);
 
         // this.getUploadSpeed(30, (speed, average) => console.log({speed, average}))
+
+        let r = await axios.get(HELLO)
+        console.log({r})
     }
 
     /**
