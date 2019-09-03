@@ -7,8 +7,8 @@ const port = 3001;
 app.use(bodyParser.json({limit: '50mb', extended: true}));
 app.use(bodyParser.urlencoded({limit: '50mb', extended: true}));
 
-app.get(`/api/hello`, (req, res) => {
-    res.send({test: "hello"});
+app.get(`/api/testping`, (req, res) => {
+    res.sendStatus(200);
 });
 
 app.post(`/api/testuploadspeed`, (req, res) => {

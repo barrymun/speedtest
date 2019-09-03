@@ -7,41 +7,45 @@ import axios from "axios";
 import withStyles from "@material-ui/core/styles/withStyles";
 
 import {sleep} from "../utils";
-import {HELLO, TEST_UPLOAD_SPEED} from "../constants";
+import {
+    TEST_PING,
+    TEST_UPLOAD_SPEED,
+} from "../constants";
 
 const styles = theme => ({});
 const hosts = [
-    "https://google.com",
+    TEST_PING,
 ];
 
 class Main extends React.Component {
     state = {
         ping: 0,
-        speedMbps: [],
-        averageSpeedMbps: 0.0,
+        downloadSpeedMbps: [],
+        averageDownloadSpeedMbps: 0.0,
+        uploadSpeedMbps: [],
+        averageUploadSpeedMbps: 0.0,
     };
 
     async componentDidMount() {
-        // await this.sumDownloadSpeed(10);
-        // await this.sumPing(100);
-
-        this.getUploadSpeed(5, (speed, average) => console.log({speed, average}))
+        // await this.getAverageDownloadSpeed(10);
+        await this.getAveragePing(100);
+        // await this.getAverageUploadSpeed(10);
     }
 
     /**
      *
      * @returns {Promise<void>}
      */
-    sumDownloadSpeed = async iterations => {
+    getAverageDownloadSpeed = async iterations => {
         for (let index = 0; index < iterations; index++) {
-            await this.getDownloadSpeed()
-                .then(r => {
-                    let speedMbps = [...this.state.speedMbps, r];
-                    this.setState(prevState => ({
-                        speedMbps,
-                        averageSpeedMbps: (speedMbps.reduce((a, b) => a + b)) / speedMbps.length,
-                    }), () => console.log(this.state.averageSpeedMbps))
-                });
+            let r = await this.getDownloadSpeed();
+            let downloadSpeedMbps = [...this.state.downloadSpeedMbps, r];
+            let averageDownloadSpeedMbps = (downloadSpeedMbps.reduce((a, b) => a + b)) / downloadSpeedMbps.length;
+
+            this.setState(prevState => ({
+                downloadSpeedMbps,
+                averageDownloadSpeedMbps,
+            }), () => console.log(this.state.averageDownloadSpeedMbps))
             await sleep(50);
         }
     };
@@ -79,7 +83,7 @@ class Main extends React.Component {
      *
      * @returns {Promise<void>}
      */
-    sumPing = async iterations => {
+    getAveragePing = async iterations => {
         for (let index = 0; index < iterations; index++) {
             hosts.forEach(async host => {
                 await this.getPing(host, ping => this.setState({ping}));
@@ -100,13 +104,14 @@ class Main extends React.Component {
         xhr.setRequestHeader("Pragma", "no-cache");
         xhr.setRequestHeader("If-Modified-Since", "Sat, 1 Jan 2000 00:00:00 GMT");
         xhr.onload = function () {
-            // callback(null, xhr.response);
-            callback(null, 0);
+            let endTime = new Date().getTime();
+            let speedMs = endTime - startTime;
+            callback(speedMs);
         };
         xhr.onerror = function () {
             let endTime = new Date().getTime();
-            let ping = endTime - startTime;
-            callback(ping);
+            let speedMs = endTime - startTime;
+            callback(speedMs);
         };
         startTime = new Date().getTime();
         xhr.send();
@@ -115,10 +120,27 @@ class Main extends React.Component {
     /**
      *
      * @param iterations
-     * @param callback
      * @returns {Promise<void>}
      */
-    getUploadSpeed = async (iterations, callback) => {
+    getAverageUploadSpeed = async iterations => {
+        for (let index = 0; index < iterations; index++) {
+            let r = await this.getUploadSpeed();
+            let uploadSpeedMbps = [...this.state.uploadSpeedMbps, r];
+            let averageUploadSpeedMbps = (uploadSpeedMbps.reduce((a, b) => a + b)) / uploadSpeedMbps.length;
+
+            this.setState(prevState => ({
+                uploadSpeedMbps,
+                averageUploadSpeedMbps,
+            }), () => console.log(this.state.averageUploadSpeedMbps));
+            await sleep(1000);
+        }
+    };
+
+    /**
+     *
+     * @returns {Promise<number>}
+     */
+    getUploadSpeed = async () => {
         let url = `${TEST_UPLOAD_SPEED}?cacheCleaner=${uuid()}`,  // prevent cache
             data = getRandomString(1),  // 1 MB POST size handled by all servers
             startTime,
@@ -137,8 +159,14 @@ class Main extends React.Component {
         speedBps = (bitsLoaded / duration).toFixed(2);
         speedKbps = (speedBps / 1024).toFixed(2);
         speedMbps = (speedKbps / 1024).toFixed(2);
-        callback(duration, speedMbps);
+        return parseFloat(speedMbps);
 
+        /**
+         * generate large payload
+         *
+         * @param sizeInMb
+         * @returns {string}
+         */
         function getRandomString(sizeInMb) {
             let chars = "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789~!@#$%^&*()_+`-=[]{}|;':,./<>?",  // random data prevents gzip effect
                 iterations = sizeInMb * 1024 * 1024, //get byte count
@@ -153,13 +181,15 @@ class Main extends React.Component {
     render() {
         const {
             ping,
-            averageSpeedMbps,
+            averageDownloadSpeedMbps,
+            averageUploadSpeedMbps,
         } = this.state;
 
         return (
             <div>
-                <div>{averageSpeedMbps}</div>
+                <div>{averageDownloadSpeedMbps}</div>
                 <div>{ping}</div>
+                <div>{averageUploadSpeedMbps}</div>
             </div>
         )
     }
