@@ -112,72 +112,35 @@ class Main extends React.Component {
         xhr.send();
     };
 
+    /**
+     *
+     * @param iterations
+     * @param callback
+     * @returns {Promise<void>}
+     */
     getUploadSpeed = async (iterations, callback) => {
         let url = `${TEST_UPLOAD_SPEED}?cacheCleaner=${uuid()}`,  // prevent cache
             data = getRandomString(1),  // 1 MB POST size handled by all servers
             startTime,
             endTime,
-            duration;
+            duration,
+            bitsLoaded,
+            speedBps,
+            speedKbps,
+            speedMbps;
 
         startTime = new Date().getTime();
         await axios.post(url, {data});
         endTime = new Date().getTime();
         duration = (endTime - startTime) / 1000;
-        callback(duration, 0)
+        bitsLoaded = data.length * 8;
+        speedBps = (bitsLoaded / duration).toFixed(2);
+        speedKbps = (speedBps / 1024).toFixed(2);
+        speedMbps = (speedKbps / 1024).toFixed(2);
+        callback(duration, speedMbps);
 
         function getRandomString(sizeInMb) {
-            let chars = "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789~!@#$%^&*()_+`-=[]{}|;':,./<>?", //random data prevents gzip effect
-                iterations = sizeInMb * 1024 * 1024, //get byte count
-                result = '';
-            for (let index = 0; index < iterations; index++) {
-                result += chars.charAt(Math.floor(Math.random() * chars.length));
-            }
-            return result;
-        }
-    };
-
-    getUploadSpeedOLD = (iterations, callback) => {
-        let average = 0,
-            index = 0,
-            timer = window.setInterval(check, 500); //check every 5 seconds
-        check();
-
-        function check() {
-            let xhr = new XMLHttpRequest(),
-                url = `${TEST_UPLOAD_SPEED}?cacheCleaner=${uuid()}`,  // prevent cache
-                data = getRandomString(1),  // 1 MB POST size handled by all servers
-                startTime,
-                endTime,
-                speed = 0;
-
-            xhr.open('POST', url, true);
-            // xhr.setRequestHeader("Content-type", "application/x-www-form-urlencoded");
-            // xhr.setRequestHeader("Content-length", data.length);
-            xhr.onreadystatechange = function (event) {
-                if (xhr.readyState === 4) {
-                    endTime = new Date().getTime();
-                    // speed = Math.round(1024 / ((endTime - startTime) / 1000));
-                    // average === 0
-                    //     ? average = speed
-                    //     : average = Math.round((average + speed) / 2);
-
-                    var duration = (endTime - startTime) / 1000;
-                    var bitsLoaded = data.length * 8;
-                    var speedMbps = ((bitsLoaded / duration) / 1024 / 1024).toFixed(2);
-                    callback(speedMbps, 0);
-
-                    index++;
-                    if (index === iterations) {
-                        window.clearInterval(timer);
-                    }
-                }
-            };
-            startTime = new Date().getTime();
-            xhr.send(data);
-        }
-
-        function getRandomString(sizeInMb) {
-            let chars = "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789~!@#$%^&*()_+`-=[]{}|;':,./<>?", //random data prevents gzip effect
+            let chars = "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789~!@#$%^&*()_+`-=[]{}|;':,./<>?",  // random data prevents gzip effect
                 iterations = sizeInMb * 1024 * 1024, //get byte count
                 result = '';
             for (let index = 0; index < iterations; index++) {
