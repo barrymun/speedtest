@@ -7,7 +7,7 @@ import axios from "axios";
 import withStyles from "@material-ui/core/styles/withStyles";
 
 import {sleep} from "../utils";
-import {HELLO} from "../constants";
+import {HELLO, TEST_UPLOAD_SPEED} from "../constants";
 
 const styles = theme => ({});
 const hosts = [
@@ -25,10 +25,7 @@ class Main extends React.Component {
         // await this.sumDownloadSpeed(10);
         // await this.sumPing(100);
 
-        // this.getUploadSpeed(30, (speed, average) => console.log({speed, average}))
-
-        let r = await axios.get(HELLO)
-        console.log({r})
+        this.getUploadSpeed(5, (speed, average) => console.log({speed, average}))
     }
 
     /**
@@ -95,7 +92,7 @@ class Main extends React.Component {
      *
      */
     getPing = async (host, callback) => {
-        let startTime = new Date().getTime();
+        let startTime;
         let xhr = new XMLHttpRequest();
 
         xhr.open("GET", `${host}?cacheCleaner=${uuid()}`, true);
@@ -111,37 +108,71 @@ class Main extends React.Component {
             let ping = endTime - startTime;
             callback(ping);
         };
+        startTime = new Date().getTime();
         xhr.send();
     };
 
-    getUploadSpeed = (iterations, callback) => {
+    getUploadSpeed = async (iterations, callback) => {
+        let url = `${TEST_UPLOAD_SPEED}?cacheCleaner=${uuid()}`,  // prevent cache
+            data = getRandomString(1),  // 1 MB POST size handled by all servers
+            startTime,
+            endTime,
+            duration;
+
+        startTime = new Date().getTime();
+        await axios.post(url, {data});
+        endTime = new Date().getTime();
+        duration = (endTime - startTime) / 1000;
+        callback(duration, 0)
+
+        function getRandomString(sizeInMb) {
+            let chars = "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789~!@#$%^&*()_+`-=[]{}|;':,./<>?", //random data prevents gzip effect
+                iterations = sizeInMb * 1024 * 1024, //get byte count
+                result = '';
+            for (let index = 0; index < iterations; index++) {
+                result += chars.charAt(Math.floor(Math.random() * chars.length));
+            }
+            return result;
+        }
+    };
+
+    getUploadSpeedOLD = (iterations, callback) => {
         let average = 0,
             index = 0,
-            timer = window.setInterval(check, 2000); //check every 5 seconds
+            timer = window.setInterval(check, 500); //check every 5 seconds
         check();
 
         function check() {
             let xhr = new XMLHttpRequest(),
-                url = '?cache=' + Math.floor(Math.random() * 10000), //prevent url cache
-                data = getRandomString(1), //1 meg POST size handled by all servers
+                url = `${TEST_UPLOAD_SPEED}?cacheCleaner=${uuid()}`,  // prevent cache
+                data = getRandomString(1),  // 1 MB POST size handled by all servers
                 startTime,
+                endTime,
                 speed = 0;
 
+            xhr.open('POST', url, true);
+            // xhr.setRequestHeader("Content-type", "application/x-www-form-urlencoded");
+            // xhr.setRequestHeader("Content-length", data.length);
             xhr.onreadystatechange = function (event) {
                 if (xhr.readyState === 4) {
-                    speed = Math.round(1024 / ((new Date() - startTime) / 1000));
-                    average === 0
-                        ? average = speed
-                        : average = Math.round((average + speed) / 2);
-                    callback(speed, average);
+                    endTime = new Date().getTime();
+                    // speed = Math.round(1024 / ((endTime - startTime) / 1000));
+                    // average === 0
+                    //     ? average = speed
+                    //     : average = Math.round((average + speed) / 2);
+
+                    var duration = (endTime - startTime) / 1000;
+                    var bitsLoaded = data.length * 8;
+                    var speedMbps = ((bitsLoaded / duration) / 1024 / 1024).toFixed(2);
+                    callback(speedMbps, 0);
+
                     index++;
                     if (index === iterations) {
                         window.clearInterval(timer);
                     }
                 }
             };
-            xhr.open('POST', url, true);
-            startTime = new Date();
+            startTime = new Date().getTime();
             xhr.send(data);
         }
 
