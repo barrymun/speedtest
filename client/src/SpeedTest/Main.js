@@ -28,9 +28,9 @@ class Main extends React.Component {
     };
 
     async componentDidMount() {
-        // await this.getAverageDownloadSpeed(10);
+        await this.getAverageDownloadSpeed(10);
         await this.getAveragePing(100);
-        // await this.getAverageUploadSpeed(10);
+        await this.getAverageUploadSpeed(10);
     }
 
     /**
@@ -84,7 +84,7 @@ class Main extends React.Component {
      * @returns {Promise<void>}
      */
     getAveragePing = async iterations => {
-        hosts.forEach(async host => {
+        for (const host of hosts) {
             for (let index = 0; index < iterations; index++) {
                 let r = await this.getPing(host);
                 let ping = [...this.state.ping, r];
@@ -96,7 +96,7 @@ class Main extends React.Component {
                 }));
                 await sleep(50);
             }
-        });
+        }
     };
 
     /**
