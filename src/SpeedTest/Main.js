@@ -20,16 +20,18 @@ class Main extends React.Component {
     };
 
     async componentDidMount() {
-        await this.sumDownloadSpeed();
-        // this.sumPing();
+        await this.sumDownloadSpeed(10);
+        await this.sumPing(100);
+
+        // this.getUploadSpeed(30, (speed, average) => console.log({speed, average}))
     }
 
     /**
      *
      * @returns {Promise<void>}
      */
-    sumDownloadSpeed = async () => {
-        for (let index = 0; index < 20; index++) {
+    sumDownloadSpeed = async iterations => {
+        for (let index = 0; index < iterations; index++) {
             await this.getDownloadSpeed()
                 .then(r => {
                     let speedMbps = [...this.state.speedMbps, r];
@@ -75,8 +77,8 @@ class Main extends React.Component {
      *
      * @returns {Promise<void>}
      */
-    sumPing = async () => {
-        for (let index = 0; index < 100; index++) {
+    sumPing = async iterations => {
+        for (let index = 0; index < iterations; index++) {
             hosts.forEach(async host => {
                 await this.getPing(host, ping => this.setState({ping}));
             });
@@ -105,6 +107,48 @@ class Main extends React.Component {
             callback(ping);
         };
         xhr.send();
+    };
+
+    getUploadSpeed = (iterations, callback) => {
+        let average = 0,
+            index = 0,
+            timer = window.setInterval(check, 2000); //check every 5 seconds
+        check();
+
+        function check() {
+            let xhr = new XMLHttpRequest(),
+                url = '?cache=' + Math.floor(Math.random() * 10000), //prevent url cache
+                data = getRandomString(1), //1 meg POST size handled by all servers
+                startTime,
+                speed = 0;
+
+            xhr.onreadystatechange = function (event) {
+                if (xhr.readyState === 4) {
+                    speed = Math.round(1024 / ((new Date() - startTime) / 1000));
+                    average === 0
+                        ? average = speed
+                        : average = Math.round((average + speed) / 2);
+                    callback(speed, average);
+                    index++;
+                    if (index === iterations) {
+                        window.clearInterval(timer);
+                    }
+                }
+            };
+            xhr.open('POST', url, true);
+            startTime = new Date();
+            xhr.send(data);
+        }
+
+        function getRandomString(sizeInMb) {
+            let chars = "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789~!@#$%^&*()_+`-=[]{}|;':,./<>?", //random data prevents gzip effect
+                iterations = sizeInMb * 1024 * 1024, //get byte count
+                result = '';
+            for (let index = 0; index < iterations; index++) {
+                result += chars.charAt(Math.floor(Math.random() * chars.length));
+            }
+            return result;
+        }
     };
 
     render() {
