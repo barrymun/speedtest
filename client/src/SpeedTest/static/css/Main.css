@@ -67,3 +67,10 @@
 .refreshBtn:hover {
     background-color: transparent !important;
 }
+
+.latencyUploadSect {
+    display: flex;
+    display: -webkit-flex;
+    align-items: center;
+    justify-content: space-evenly;
+}

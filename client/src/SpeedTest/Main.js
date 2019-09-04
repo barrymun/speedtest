@@ -218,9 +218,25 @@ class Main extends React.Component {
                     </div>
                 </div>
 
-                <div>
-                    <div>{averagePing}</div>
-                    <div>{averageUploadSpeedMbps}</div>
+                <div className={`latencyUploadSect`}>
+                    <div className={`latency`}>
+                        <div>
+                            Latency
+                        </div>
+                        <hr/>
+                        <div>
+                            {averagePing}
+                        </div>
+                    </div>
+                    <div className={`upload`}>
+                        <div>
+                            Upload
+                        </div>
+                        <hr/>
+                        <div>
+                            {averageUploadSpeedMbps}
+                        </div>
+                    </div>
                 </div>
             </div>
         )
