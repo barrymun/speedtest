@@ -1,0 +1,50 @@
+.container {
+    display: flex;
+    display: -webkit-flex;
+    align-items: center;
+    justify-content: center;
+    flex-direction: column;
+}
+
+.download {
+    display: flex;
+    display: -webkit-flex;
+    align-items: center;
+    justify-content: center;
+    flex-direction: column;
+}
+
+.downloadDisplay {
+    display: flex;
+    display: -webkit-flex;
+    align-items: flex-start;
+}
+
+.downloadText {
+    display: inline-block;
+    font-size: 35vh;
+    line-height: 33vh;
+}
+
+.downloadMetric {
+    display: flex;
+    display: -webkit-flex;
+    align-items: center;
+    justify-content: center;
+    flex-direction: column;
+}
+
+.mbps {
+    display: block;
+    font-size: 9vh;
+    margin-top: 3vh;
+}
+
+.refresh {
+    display: block;
+    margin-top: 3vh;
+}
+
+.refreshBtn {
+    border: 1px solid #2ab72a !important;
+}

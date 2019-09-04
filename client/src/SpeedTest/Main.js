@@ -5,12 +5,16 @@ import uuid from "uuid";
 import axios from "axios";
 
 import withStyles from "@material-ui/core/styles/withStyles";
+import RefreshIcon from '@material-ui/icons/Refresh';
+import IconButton from '@material-ui/core/IconButton';
 
 import {sleep} from "../utils";
 import {
     TEST_PING,
     TEST_UPLOAD_SPEED,
 } from "../constants";
+
+import "./static/css/Main.css";
 
 const styles = theme => ({});
 const hosts = [
@@ -28,9 +32,9 @@ class Main extends React.Component {
     };
 
     async componentDidMount() {
-        await this.getAverageDownloadSpeed(10);
-        await this.getAveragePing(100);
-        await this.getAverageUploadSpeed(10);
+        // await this.getAverageDownloadSpeed(10);
+        // await this.getAveragePing(100);
+        // await this.getAverageUploadSpeed(10);
     }
 
     /**
@@ -191,10 +195,31 @@ class Main extends React.Component {
         } = this.state;
 
         return (
-            <div>
-                <div>{averageDownloadSpeedMbps}</div>
-                <div>{averagePing}</div>
-                <div>{averageUploadSpeedMbps}</div>
+            <div className={`container`}>
+                <div className={`logo`}/>
+                <div className={`download`}>
+                    <div>
+                        Your internet speed is
+                    </div>
+                    <div className={`downloadDisplay`}>
+                        <span className={`downloadText`}>
+                            {averageDownloadSpeedMbps}
+                        </span>
+                        <span className={`downloadMetric`}>
+                            <span className={`mbps`}>
+                                Mbps
+                            </span>
+                            <span className={`refresh`}>
+                                <IconButton className={`refreshBtn`}>
+                                    <RefreshIcon/>
+                                </IconButton>
+                            </span>
+                        </span>
+                    </div>
+                </div>
+
+                {/*<div>{averagePing}</div>*/}
+                {/*<div>{averageUploadSpeedMbps}</div>*/}
             </div>
         )
     }
