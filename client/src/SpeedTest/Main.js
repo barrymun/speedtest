@@ -219,27 +219,42 @@ class Main extends React.Component {
                 </div>
 
                 <div className={`latencyUploadSect`}>
-                    <div className={`latency`}>
-                        <div>
+                    <div className={``}>
+                        <div className={`latency`}>
                             Latency
                         </div>
-                        <hr/>
+                        <div className={`lmLabel`}>
+                            Unloaded
+                        </div>
                         <div>
-                            {averagePing}
+                            <span className={`lmMetric`}>
+                                {averagePing}
+                            </span>
+                            <span className={`lmInfo`}>
+                                ms
+                            </span>
                         </div>
                     </div>
-                    <div className={`upload`}>
-                        <div>
+                    <div className={`spacer`}/>
+                    <div className={``}>
+                        <div className={`upload`}>
                             Upload
                         </div>
-                        <hr/>
+                        <div className={`lmLabel`}>
+                            Speed
+                        </div>
                         <div>
-                            {averageUploadSpeedMbps}
+                            <span className={`lmMetric`}>
+                                {averageUploadSpeedMbps}
+                            </span>
+                            <span className={`lmInfo`}>
+                                Mbps
+                            </span>
                         </div>
                     </div>
                 </div>
             </div>
-        )
+        );
     }
 }
 
