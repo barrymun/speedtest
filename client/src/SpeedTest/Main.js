@@ -198,12 +198,12 @@ class Main extends React.Component {
             <div className={`container`}>
                 <div className={`logo`}/>
                 <div className={`download`}>
-                    <div>
+                    <div className={`banner`}>
                         Your internet speed is
                     </div>
                     <div className={`downloadDisplay`}>
                         <span className={`downloadText`}>
-                            {averageDownloadSpeedMbps}
+                            {averageDownloadSpeedMbps.toFixed()}
                         </span>
                         <span className={`downloadMetric`}>
                             <span className={`mbps`}>
@@ -211,15 +211,17 @@ class Main extends React.Component {
                             </span>
                             <span className={`refresh`}>
                                 <IconButton className={`refreshBtn`}>
-                                    <RefreshIcon/>
+                                    <RefreshIcon className={`refreshIcon`}/>
                                 </IconButton>
                             </span>
                         </span>
                     </div>
                 </div>
 
-                {/*<div>{averagePing}</div>*/}
-                {/*<div>{averageUploadSpeedMbps}</div>*/}
+                <div>
+                    <div>{averagePing}</div>
+                    <div>{averageUploadSpeedMbps}</div>
+                </div>
             </div>
         )
     }

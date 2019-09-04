@@ -14,6 +14,12 @@
     flex-direction: column;
 }
 
+.banner {
+    font-size: 4.5vh;
+    line-height: 6vh;
+    min-height: 6vh;
+}
+
 .downloadDisplay {
     display: flex;
     display: -webkit-flex;
@@ -47,4 +53,17 @@
 
 .refreshBtn {
     border: 1px solid #2ab72a !important;
+    color: black;
+    height: 8vh;
+    width: 8vh;
+}
+
+.refreshIcon {
+    color: black;
+    height: 5vh !important;
+    width: 5vh !important;
+}
+
+.refreshBtn:hover {
+    background-color: transparent !important;
 }
