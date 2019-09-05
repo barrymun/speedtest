@@ -9,17 +9,21 @@ import RefreshIcon from '@material-ui/icons/Refresh';
 import IconButton from '@material-ui/core/IconButton';
 import Button from "@material-ui/core/Button";
 
-import {sleep} from "../utils";
 import {
-    TEST_PING,
-    TEST_UPLOAD_SPEED,
+    findIP,
+    sleep,
+} from "../utils";
+import {
+    testPing,
+    clientInfo,
+    testUploadSpeed,
 } from "../constants";
 
 import "./static/css/Main.css";
 
 const styles = theme => ({});
 const hosts = [
-    TEST_PING,
+    testPing,
 ];
 
 class Main extends React.Component {
@@ -41,6 +45,10 @@ class Main extends React.Component {
         // await this.getAverageDownloadSpeed(10);
         // await this.getAveragePing(100);
         // await this.getAverageUploadSpeed(10);
+
+        let ip = await findIP();
+        let r = await axios.get(clientInfo, {params: {ip}})
+        console.log(r)
     }
 
     /**
@@ -156,7 +164,7 @@ class Main extends React.Component {
      * @returns {Promise<number>}
      */
     getUploadSpeed = async () => {
-        let url = `${TEST_UPLOAD_SPEED}?cacheCleaner=${uuid()}`,  // prevent cache
+        let url = `${testUploadSpeed}?cacheCleaner=${uuid()}`,  // prevent cache
             data = getRandomString(1),  // 1 MB POST size handled by all servers
             startTime,
             endTime,

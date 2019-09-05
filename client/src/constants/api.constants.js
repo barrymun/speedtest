@@ -1,7 +1,9 @@
-const TEST_PING = `/api/testping`;
-const TEST_UPLOAD_SPEED = `/api/testuploadspeed`;
+const testPing = `/api/testping`;
+const clientInfo = `/api/clientinfo`;
+const testUploadSpeed = `/api/testuploadspeed`;
 
 export {
-    TEST_PING,
-    TEST_UPLOAD_SPEED,
+    testPing,
+    clientInfo,
+    testUploadSpeed,
 };
