@@ -35,6 +35,9 @@ class Main extends React.Component {
         uploadSpeedMbps: [],
         averageUploadSpeedMbps: 0.0,
         showMoreInfo: false,
+        clientIp: '',
+        clientCity: '',
+        clientIsoCode: '',
     };
 
     setStateAsync = state => {
@@ -42,14 +45,35 @@ class Main extends React.Component {
     };
 
     async componentDidMount() {
+        await this.run();
+    }
+
+    /**
+     * the speed test calculations
+     *
+     * @returns {Promise<void>}
+     */
+    run = async () => {
         // await this.getAverageDownloadSpeed(10);
         // await this.getAveragePing(100);
         // await this.getAverageUploadSpeed(10);
+        await this.getClientInfo();
+    };
 
+    /**
+     * get the ip address and rough physical location of the client
+     *
+     * @returns {Promise<void>}
+     */
+    getClientInfo = async () => {
         let ip = await findIP();
         let r = await axios.get(clientInfo, {params: {ip}});
-        console.log({r})
-    }
+        await this.setStateAsync({
+            clientIp: ip,
+            clientCity: r.data.city,
+            clientIsoCode: r.data.isoCode,
+        });
+    };
 
     /**
      *
@@ -207,6 +231,9 @@ class Main extends React.Component {
             showMoreInfo,
             averageUploadSpeedMbps,
             averageDownloadSpeedMbps,
+            clientIp,
+            clientCity,
+            clientIsoCode,
         } = this.state;
 
         return (
@@ -259,6 +286,17 @@ class Main extends React.Component {
                                         </span>
                                         <span className={`lmInfo`}>
                                             ms
+                                        </span>
+                                    </div>
+                                    <div className={`clientInfo`}>
+                                        <span>
+                                            <b>Client</b>
+                                        </span>
+                                        <span className={`clientLocation`}>
+                                            {clientCity}, {clientIsoCode}
+                                        </span>
+                                        <span className={`clientIp`}>
+                                            {clientIp}
                                         </span>
                                     </div>
                                 </div>

@@ -18,6 +18,7 @@
     font-size: 4.5vh;
     line-height: 6vh;
     min-height: 6vh;
+    font-weight: bold;
 }
 
 .downloadDisplay {
@@ -79,7 +80,7 @@
 .latencyUploadSect {
     display: flex;
     display: -webkit-flex;
-    align-items: center;
+    align-items: flex-start;
     justify-content: space-between;
 }
 
@@ -109,4 +110,16 @@
 
 .lmInfo {
     font-size: 1.5vh;
+}
+
+.clientInfo {
+    font-size: 1.75vh;
+}
+
+.clientLocation {
+    margin-left: 10px;
+}
+
+.clientIp {
+    margin-left: 15px;
 }
