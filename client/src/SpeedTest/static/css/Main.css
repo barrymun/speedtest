@@ -68,6 +68,14 @@
     background-color: transparent !important;
 }
 
+.moreInfoContainer {
+    margin-top: 5vh;
+}
+
+.moreInfo {
+    font-size: 1.75vh !important;
+}
+
 .latencyUploadSect {
     display: flex;
     display: -webkit-flex;

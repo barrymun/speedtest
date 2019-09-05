@@ -7,6 +7,7 @@ import axios from "axios";
 import withStyles from "@material-ui/core/styles/withStyles";
 import RefreshIcon from '@material-ui/icons/Refresh';
 import IconButton from '@material-ui/core/IconButton';
+import Button from "@material-ui/core/Button";
 
 import {sleep} from "../utils";
 import {
@@ -29,6 +30,11 @@ class Main extends React.Component {
         averageDownloadSpeedMbps: 0.0,
         uploadSpeedMbps: [],
         averageUploadSpeedMbps: 0.0,
+        showMoreInfo: false,
+    };
+
+    setStateAsync = state => {
+        return new Promise(resolve => this.setState(state, resolve));
     };
 
     async componentDidMount() {
@@ -190,6 +196,7 @@ class Main extends React.Component {
     render() {
         const {
             averagePing,
+            showMoreInfo,
             averageUploadSpeedMbps,
             averageDownloadSpeedMbps,
         } = this.state;
@@ -218,40 +225,55 @@ class Main extends React.Component {
                     </div>
                 </div>
 
-                <div className={`latencyUploadSect`}>
-                    <div className={``}>
-                        <div className={`latency`}>
-                            Latency
-                        </div>
-                        <div className={`lmLabel`}>
-                            Unloaded
-                        </div>
-                        <div>
-                            <span className={`lmMetric`}>
-                                {averagePing}
-                            </span>
-                            <span className={`lmInfo`}>
-                                ms
-                            </span>
-                        </div>
-                    </div>
-                    <div className={`spacer`}/>
-                    <div className={``}>
-                        <div className={`upload`}>
-                            Upload
-                        </div>
-                        <div className={`lmLabel`}>
-                            Speed
-                        </div>
-                        <div>
-                            <span className={`lmMetric`}>
-                                {averageUploadSpeedMbps}
-                            </span>
-                            <span className={`lmInfo`}>
-                                Mbps
-                            </span>
-                        </div>
-                    </div>
+                <div className={`moreInfoContainer`}>
+                    {!showMoreInfo
+                        ? (
+                            <Button
+                                variant="outlined"
+                                className={`moreInfo`}
+                                onClick={() => this.setState({showMoreInfo: true})}
+                            >
+                                Show more info
+                            </Button>
+                        )
+                        : (
+                            <div className={`latencyUploadSect`}>
+                                <div className={``}>
+                                    <div className={`latency`}>
+                                        Latency
+                                    </div>
+                                    <div className={`lmLabel`}>
+                                        Unloaded
+                                    </div>
+                                    <div>
+                                        <span className={`lmMetric`}>
+                                            {averagePing}
+                                        </span>
+                                        <span className={`lmInfo`}>
+                                            ms
+                                        </span>
+                                    </div>
+                                </div>
+                                <div className={`spacer`}/>
+                                <div className={``}>
+                                    <div className={`upload`}>
+                                        Upload
+                                    </div>
+                                    <div className={`lmLabel`}>
+                                        Speed
+                                    </div>
+                                    <div>
+                                        <span className={`lmMetric`}>
+                                            {averageUploadSpeedMbps}
+                                        </span>
+                                        <span className={`lmInfo`}>
+                                            Mbps
+                                        </span>
+                                    </div>
+                                </div>
+                            </div>
+                        )
+                    }
                 </div>
             </div>
         );
