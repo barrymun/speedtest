@@ -5,11 +5,11 @@ const maxmind = require('maxmind');
 
 const app = express();
 const port = 3001;
+const cityLookup = './db/geolite2-city/data.mmdb';
+// const countryLookup = './db/geolite2-country/data.mmdb';  // not required, city lookup yields this info
+const defaultLocale = 'en';
 
 import {asyncMiddleware} from "./modules/middleware.modules";
-
-const cityLookup = './db/geolite2-city/data.mmdb';
-const countryLookup = './db/geolite2-country/data.mmdb';
 
 app.use(bodyParser.json({limit: '50mb', extended: true}));
 app.use(bodyParser.urlencoded({limit: '50mb', extended: true}));
@@ -19,13 +19,12 @@ app.get(`/api/testping`, (req, res) => {
 });
 
 app.get(`/api/clientinfo`, asyncMiddleware(async (req, res, next) => {
-    let lookup = await maxmind.open(countryLookup);
+    let lookup = await maxmind.open(cityLookup);
     let params = req.query;
     let ip = params.ip;
-    console.log({ip})
-    var city = lookup.get(ip);
-    console.log({city})
-    let data = {city}
+    let locale = params.locale != null ? params.locale : defaultLocale;
+    let r = lookup.get(ip);
+    let data = {city: r.city.names[locale], isoCode: r.country.iso_code};
     res.send(data)
 }));
 

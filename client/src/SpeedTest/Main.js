@@ -47,8 +47,8 @@ class Main extends React.Component {
         // await this.getAverageUploadSpeed(10);
 
         let ip = await findIP();
-        let r = await axios.get(clientInfo, {params: {ip}})
-        console.log(r)
+        let r = await axios.get(clientInfo, {params: {ip}});
+        console.log({r})
     }
 
     /**
