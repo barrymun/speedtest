@@ -5,9 +5,11 @@ import uuid from "uuid";
 import axios from "axios";
 
 import withStyles from "@material-ui/core/styles/withStyles";
-import RefreshIcon from '@material-ui/icons/Refresh';
 import IconButton from '@material-ui/core/IconButton';
 import Button from "@material-ui/core/Button";
+import RefreshIcon from '@material-ui/icons/Refresh';
+import {FontAwesomeIcon} from '@fortawesome/react-fontawesome'
+import {faTachometerAlt} from '@fortawesome/free-solid-svg-icons'
 
 import {
     findIP,
@@ -238,7 +240,13 @@ class Main extends React.Component {
 
         return (
             <div className={`container`}>
-                <div className={`logo`}/>
+                <div className={`logo`}>
+                    <FontAwesomeIcon
+                        icon={faTachometerAlt}
+                        size="6x"
+                        className={`logoSVG`}
+                    />
+                </div>
                 <div className={`download`}>
                     <div className={`banner`}>
                         Your internet speed is
