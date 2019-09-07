@@ -27,20 +27,21 @@ const styles = theme => ({});
 const hosts = [
     testPing,
 ];
+const defaultState = {
+    ping: [],
+    averagePing: 0.0,
+    downloadSpeedMbps: [],
+    averageDownloadSpeedMbps: 0.0,
+    uploadSpeedMbps: [],
+    averageUploadSpeedMbps: 0.0,
+    showMoreInfo: false,
+    clientIp: '',
+    clientCity: '',
+    clientIsoCode: '',
+};
 
 class Main extends React.Component {
-    state = {
-        ping: [],
-        averagePing: 0.0,
-        downloadSpeedMbps: [],
-        averageDownloadSpeedMbps: 0.0,
-        uploadSpeedMbps: [],
-        averageUploadSpeedMbps: 0.0,
-        showMoreInfo: false,
-        clientIp: '',
-        clientCity: '',
-        clientIsoCode: '',
-    };
+    state = defaultState;
 
     setStateAsync = state => {
         return new Promise(resolve => this.setState(state, resolve));
@@ -56,10 +57,19 @@ class Main extends React.Component {
      * @returns {Promise<void>}
      */
     run = async () => {
-        // await this.getAverageDownloadSpeed(10);
-        // await this.getAveragePing(100);
-        // await this.getAverageUploadSpeed(10);
+        await this.getAverageDownloadSpeed(10);
+        await this.getAveragePing(100);
+        await this.getAverageUploadSpeed(10);
         await this.getClientInfo();
+    };
+
+    /**
+     * reset the state to its default value
+     *
+     * @returns {Promise<void>}
+     */
+    resetMetrics = async () => {
+        return this.setStateAsync({...defaultState});
     };
 
     /**
@@ -200,6 +210,8 @@ class Main extends React.Component {
             speedKbps,
             speedMbps;
 
+        console.log(data.length)
+
         startTime = new Date().getTime();
         await axios.post(url, {data});
         endTime = new Date().getTime();
@@ -260,7 +272,13 @@ class Main extends React.Component {
                                 Mbps
                             </span>
                             <span className={`refresh`}>
-                                <IconButton className={`refreshBtn`}>
+                                <IconButton
+                                    className={`refreshBtn`}
+                                    onClick={async () => {
+                                        await this.resetMetrics();
+                                        await this.run();
+                                    }}
+                                >
                                     <RefreshIcon className={`refreshIcon`}/>
                                 </IconButton>
                             </span>
