@@ -210,8 +210,6 @@ class Main extends React.Component {
             speedKbps,
             speedMbps;
 
-        console.log(data.length)
-
         startTime = new Date().getTime();
         await axios.post(url, {data});
         endTime = new Date().getTime();
@@ -308,7 +306,7 @@ class Main extends React.Component {
                                     </div>
                                     <div>
                                         <span className={`lmMetric`}>
-                                            {averagePing}
+                                            {averagePing.toFixed()}
                                         </span>
                                         <span className={`lmInfo`}>
                                             ms
@@ -319,7 +317,7 @@ class Main extends React.Component {
                                             <b>Client</b>
                                         </span>
                                         <span className={`clientLocation`}>
-                                            {clientCity}, {clientIsoCode}
+                                            {clientCity} {clientIsoCode}
                                         </span>
                                         <span className={`clientIp`}>
                                             {clientIp}
@@ -336,7 +334,7 @@ class Main extends React.Component {
                                     </div>
                                     <div>
                                         <span className={`lmMetric`}>
-                                            {averageUploadSpeedMbps}
+                                            {averageUploadSpeedMbps.toFixed()}
                                         </span>
                                         <span className={`lmInfo`}>
                                             Mbps
