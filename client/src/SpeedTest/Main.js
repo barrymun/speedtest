@@ -249,12 +249,12 @@ class Main extends React.Component {
 
 
     /**
-     * flip the current state of "isTesting: variable
+     * flip the current state of "isTesting" variable
      */
     setLoading = async () => {
         const {isTesting} = this.state;
         if (!isTesting) return this.run();
-        else return this.pause();
+        // else return this.pause();
     };
 
 
