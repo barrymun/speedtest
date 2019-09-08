@@ -7,9 +7,8 @@ import axios from "axios";
 import withStyles from "@material-ui/core/styles/withStyles";
 import IconButton from '@material-ui/core/IconButton';
 import Button from "@material-ui/core/Button";
-import RefreshIcon from '@material-ui/icons/Refresh';
 import {FontAwesomeIcon} from '@fortawesome/react-fontawesome'
-import {faTachometerAlt} from '@fortawesome/free-solid-svg-icons'
+import {faTachometerAlt, faRedoAlt} from '@fortawesome/free-solid-svg-icons'
 
 import {
     findIP,
@@ -277,7 +276,10 @@ class Main extends React.Component {
                                         await this.run();
                                     }}
                                 >
-                                    <RefreshIcon className={`refreshIcon`}/>
+                                    <FontAwesomeIcon
+                                        icon={faRedoAlt}
+                                        className={`refreshIcon`}
+                                    />
                                 </IconButton>
                             </span>
                         </span>

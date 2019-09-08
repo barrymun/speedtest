@@ -55,15 +55,11 @@
 .refresh {
     display: block;
     margin-top: 3vh;
-    /*height: 5vh !important;*/
-    /*width: 5vh !important;*/
 }
 
 .refreshBtn {
     border: 2px solid #2ab72a !important;
     color: black !important;
-    height: 8vh !important;
-    width: 8vh !important;
 }
 
 .refreshIcon {
