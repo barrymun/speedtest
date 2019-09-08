@@ -5,10 +5,9 @@ import uuid from "uuid";
 import axios from "axios";
 
 import withStyles from "@material-ui/core/styles/withStyles";
-import IconButton from '@material-ui/core/IconButton';
 import Button from "@material-ui/core/Button";
 import {FontAwesomeIcon} from '@fortawesome/react-fontawesome'
-import {faTachometerAlt, faRedoAlt} from '@fortawesome/free-solid-svg-icons'
+import {faTachometerAlt} from '@fortawesome/free-solid-svg-icons'
 
 import {
     findIP,
@@ -19,6 +18,7 @@ import {
     clientInfo,
     testUploadSpeed,
 } from "../constants";
+import CircularIntegration from "./components/Progress";
 
 import "./static/css/Main.css";
 
@@ -27,6 +27,7 @@ const hosts = [
     testPing,
 ];
 const defaultState = {
+    isTesting: false,  // is the speed test complete?
     ping: [],
     averagePing: 0.0,
     downloadSpeedMbps: [],
@@ -47,7 +48,6 @@ class Main extends React.Component {
     };
 
     async componentDidMount() {
-        await this.run();
     }
 
     /**
@@ -56,10 +56,21 @@ class Main extends React.Component {
      * @returns {Promise<void>}
      */
     run = async () => {
+        await this.setStateAsync({isTesting: true});
         await this.getAverageDownloadSpeed(10);
         await this.getAveragePing(100);
         await this.getAverageUploadSpeed(10);
         await this.getClientInfo();
+        await this.setStateAsync({isTesting: false});
+    };
+
+    /**
+     * stop the tests
+     *
+     * @returns {Promise<void>}
+     */
+    pause = async () => {
+        return this.setStateAsync({isTesting: false});
     };
 
     /**
@@ -236,6 +247,17 @@ class Main extends React.Component {
         }
     };
 
+
+    /**
+     * flip the current state of "isTesting: variable
+     */
+    setLoading = async () => {
+        const {isTesting} = this.state;
+        if (!isTesting) return this.run();
+        else return this.pause();
+    };
+
+
     render() {
         const {
             averagePing,
@@ -245,6 +267,7 @@ class Main extends React.Component {
             clientIp,
             clientCity,
             clientIsoCode,
+            isTesting,
         } = this.state;
 
         return (
@@ -269,18 +292,10 @@ class Main extends React.Component {
                                 Mbps
                             </span>
                             <span className={`refresh`}>
-                                <IconButton
-                                    className={`refreshBtn`}
-                                    onClick={async () => {
-                                        await this.resetMetrics();
-                                        await this.run();
-                                    }}
-                                >
-                                    <FontAwesomeIcon
-                                        icon={faRedoAlt}
-                                        className={`refreshIcon`}
-                                    />
-                                </IconButton>
+                                <CircularIntegration
+                                    loading={isTesting}
+                                    setLoading={this.setLoading}
+                                />
                             </span>
                         </span>
                     </div>
