@@ -1,6 +1,13 @@
+/**
+ *
+ */
+
+`use strict`;
+
+require('dotenv').config();
+
 const express = require('express');
 const bodyParser = require('body-parser');
-const geolite2 = require('geolite2');
 const maxmind = require('maxmind');
 
 const app = express();
