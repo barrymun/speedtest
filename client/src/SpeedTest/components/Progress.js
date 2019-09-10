@@ -19,6 +19,7 @@ const useStyles = makeStyles(theme => ({
         position: 'relative',
     },
     button: {
+        zIndex: `2147483647`,
         boxShadow: `none`,
         backgroundColor: `transparent`,
         '&:hover': {
