@@ -103,6 +103,9 @@ class Main extends React.Component {
      */
     getAverageDownloadSpeed = async iterations => {
         for (let index = 0; index < iterations; index++) {
+
+            if (!this.state.isTesting) break;
+
             let r = await this.getDownloadSpeed();
             let downloadSpeedMbps = [...this.state.downloadSpeedMbps, r];
             let averageDownloadSpeedMbps = (downloadSpeedMbps.reduce((a, b) => a + b)) / downloadSpeedMbps.length;
@@ -150,6 +153,9 @@ class Main extends React.Component {
     getAveragePing = async iterations => {
         for (const host of hosts) {
             for (let index = 0; index < iterations; index++) {
+
+                if (!this.state.isTesting) break;
+
                 let r = await this.getPing(host);
                 let ping = [...this.state.ping, r];
                 let averagePing = (ping.reduce((a, b) => a + b)) / ping.length;
@@ -193,6 +199,9 @@ class Main extends React.Component {
      */
     getAverageUploadSpeed = async iterations => {
         for (let index = 0; index < iterations; index++) {
+
+            if (!this.state.isTesting) break;
+
             let r = await this.getUploadSpeed();
             let uploadSpeedMbps = [...this.state.uploadSpeedMbps, r];
             let averageUploadSpeedMbps = (uploadSpeedMbps.reduce((a, b) => a + b)) / uploadSpeedMbps.length;
@@ -254,7 +263,7 @@ class Main extends React.Component {
     setLoading = async () => {
         const {isTesting} = this.state;
         if (!isTesting) return this.run();
-        // else return this.pause();
+        else return this.pause();
     };
 
 
